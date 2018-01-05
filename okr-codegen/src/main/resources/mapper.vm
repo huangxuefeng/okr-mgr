@@ -1,0 +1,132 @@
+#set ($dao=$data.dao)
+#set ($mapper=$data.mapper)
+#set ($entity=$data.entity)
+#set ($condition=$data.condition)
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${entity.packageName}.${entity.clazzName}">
+	<resultMap type="${entity.clazzName}" id="baseResultMap">
+#foreach($field in $mapper.fields)
+		<result property="${field.property}" column="${field.col}"  jdbcType="${field.jdbcType}"/>
+#end
+	</resultMap>
+	
+	<sql id="selectSql">
+		SELECT
+			id AS id,
+			<trim prefix="" suffixOverrides=",">
+#foreach($field in $mapper.fields)
+			${field.col} AS ${field.property},
+#end
+			</trim>
+		FROM ${mapper.tableName}
+	</sql>
+	
+	<sql id="whereSql">
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="id != null">
+				AND id = #{id}
+			</if>
+#foreach($field in $mapper.fields)
+			<if test="${field.property} != null">
+				AND ${field.col} = #{${field.property}}
+			</if>
+#end
+		</trim>
+	</sql>
+	
+	<sql id="whereSqlPaging">
+		<trim prefix="WHERE" prefixOverrides="AND">
+#foreach($field in $mapper.fields)
+			<if test="param.${field.property} != null">
+				AND ${field.col} = #{param.${field.property}}
+			</if>
+#end
+		</trim>
+	</sql>
+	
+	<sql id="updateSql">
+		UPDATE ${mapper.tableName}
+		<trim prefix="SET" suffixOverrides=",">
+#foreach($field in $mapper.fields)
+			<if test="${field.property} != null">
+				${field.col} = #{${field.property}},
+			</if>
+#end
+		</trim>
+	</sql>
+
+	<sql id="deleteSql">
+		DELETE from ${mapper.tableName}
+	</sql>
+
+	<sql id="insertColume">
+		<trim prefix="" suffixOverrides=",">
+			id,
+#foreach($field in $mapper.fields)
+			<if test="${field.property} != null">
+				${field.col},
+			</if>
+#end
+		</trim>
+	</sql>
+
+	<sql id="insertValue">
+		<trim prefix="" suffixOverrides=",">
+#foreach($field in $mapper.fields)
+			<if test="${field.property} != null">
+				#{${field.property}},
+			</if>
+#end
+		</trim>
+	</sql>
+	
+	<sql id="pagingSql">
+		<trim prefix="" suffixOverrides=",">
+			<if test="limit != null">
+				limit #{offset},#{limit}
+			</if>
+		</trim>
+	</sql>
+	
+	<insert id="insert" parameterType="${entity.clazzName}" >
+		INSERT INTO ${mapper.tableName}(
+			<include refid="insertColume"/>
+		) VALUE (
+			<include refid="insertValue"/>
+		)
+	</insert>
+	
+	<update id="update" parameterType="${entity.clazzName}">
+		<include refid="updateSql" />
+		<include refid="whereSql" />
+	</update>
+	
+	<delete id="delete" parameterType="${entity.clazzName}">
+		<include refid="deleteSql" />
+		<include refid="whereSql" />
+	</delete>
+	
+	<select id="load" parameterType="${entity.clazzName}" resultType="${entity.clazzName}">
+		<include refid="selectSql" />
+		<include refid="whereSql" />
+	</select>
+	
+	<select id="queryForAll" parameterType="${entity.clazzName}" resultType="${entity.clazzName}">
+		<include refid="selectSql" />
+		<include refid="whereSql" />
+	</select>
+	
+	<select id="selectCount" parameterType="PagingParam"
+		resultType="Integer">
+		SELECT COUNT(ID) AS count FROM subject
+		<include refid="whereSqlPaging" />
+	</select>
+	
+	<select id="queryForPage" parameterType="PagingParam" resultType="${entity.clazzName}">
+		<include refid="selectSql" />
+		<include refid="whereSqlPaging" />
+		<include refid="pagingSql" />
+	</select>
+	
+</mapper>

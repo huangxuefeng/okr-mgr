@@ -10,6 +10,7 @@
 		<module>okr-api</module>
 		<module>okr-dao</module>
 		<module>okr-service</module>
+		<module>okr-codegen</module>
 	</modules>
 
 	<properties>

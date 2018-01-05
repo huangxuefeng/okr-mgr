@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+	<properties>
+		<property name="PATTERN">%d{yy-MM-dd HH:mm:SS.SSS} |-%-5level [%thread] %c -| %msg%n</property>
+	</properties>
+	
+	<appenders>
+		<Console name="CONSOLE" target="system.out">
+			<PatternLayout pattern="${PATTERN}"/>
+		</Console>
+	</appenders>
+	
+	<loggers>
+		<root level="warn">
+			<appenderref ref="CONSOLE" />
+		</root>
+	</loggers>
+</configuration>

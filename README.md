@@ -12,3 +12,5 @@ okr后端部分
 3、打开okr-api中com.cmb.okr.api.OkrApp文件 run as Java Application
 
 4、打开url:http://localhost:8001/okr/swagger-ui.html
+
+5、
